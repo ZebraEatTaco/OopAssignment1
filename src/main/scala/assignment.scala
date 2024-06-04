@@ -6,9 +6,9 @@ class Customer(_name: String, _email: String, _gender: String, _phoneNumber: Str
 
 class Admin(_name: String, _email: String, _gender: String, _phoneNumber: String, _address: String) extends User(_name, _email, _gender, _phoneNumber, _address)
 
-case class FoodCategory(category: String)
+case class Category(category: String)
 
-class Food(foodCategory: FoodCategory, val name: String, val price: Double, val company: String) {
+class Food(Category: Category, val name: String, val price: Double, val company: String) {
   var reviews: List[(Int, String)] = Nil
   var ordersReceived: Int = 0
 
