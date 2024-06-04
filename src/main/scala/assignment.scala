@@ -1,6 +1,6 @@
 case class Login(username: String, password: String)
 
-abstract class User(val name: String, val email: String, val gender: String, val phoneNumber: String, val address: String)
+abstract class User(val name: String, var email: String, val gender: String, var phoneNumber: String, var address: String)
 
 class Customer(_name: String, _email: String, _gender: String, _phoneNumber: String, _address: String) extends User(_name, _email, _gender, _phoneNumber, _address)
 
