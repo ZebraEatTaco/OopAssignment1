@@ -1,14 +1,14 @@
 case class Login(username: String, password: String)
+  def status(username, password):Boolean 
 
-abstract class User(val name: String, var email: String, val gender: String, var phoneNumber: String, var address: String)
-
+abstract class User(login:Login, val displayName: String, var email: String, val gender: String, var phoneNumber: String, var address: String)
 class Customer(_name: String, _email: String, _gender: String, _phoneNumber: String, _address: String) extends User(_name, _email, _gender, _phoneNumber, _address)
 
 class Admin(_name: String, _email: String, _gender: String, _phoneNumber: String, _address: String) extends User(_name, _email, _gender, _phoneNumber, _address)
 
 case class Category(category: String)
 
-class Food(Category: Category, val name: String, val price: Double, val company: String) {
+class Food(category: Category, val name: String, val price: Double, val company: String) {
   var reviews: List[(Int, String)] = Nil
   var ordersReceived: Int = 0
 
@@ -23,3 +23,5 @@ class Food(Category: Category, val name: String, val price: Double, val company:
 }
 
 case class Order(id: Int, customer: Customer, company: String, food: Food, quantity: Int, totalPrice: Double)
+
+trait Discount()
