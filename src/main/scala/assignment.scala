@@ -85,7 +85,7 @@ class DeliveryPerson(val name: String, var phoneNumber: String, var isAvailable:
   }
 }
 
-case class Payment(order: Order, amount: Double, paymentMethod: String, var isPaid: Boolean = false) {
+case class Payment(paymentID: String, order: Order, amount: Double, paymentMethod: String, var isPaid: Boolean = false) {
   def makePayment(): Unit = {
     isPaid = true
   }
