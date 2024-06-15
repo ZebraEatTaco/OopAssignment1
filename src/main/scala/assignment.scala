@@ -3,16 +3,20 @@ abstract class User(val username: String, val displayName: String, var email: St
 case class Login(username: String, password: String)
 
 object User {
-  def register(username: String, password: String, displayName: String, email: String, gender: String, phoneNumber: String, address: String): User = {
-    new User(username, displayName, email, gender, phoneNumber, address) {}
+  def register(userType: String, username: String, password: String, displayName: String, email: String, gender: String, phoneNumber: String, address: String): User = {
+    userType.toLowerCase match {
+      case "customer" => new Customer(username, displayName, email, gender, phoneNumber, address, Login(username, password))
+      case "admin" => new Admin(username, displayName, email, gender, phoneNumber, address, Login(username, password))
+      case _ => throw new IllegalArgumentException(s"Unknown user type: $userType")
+    }
   }
 }
 
-class Customer(login: Login, displayName: String, email: String, gender: String, phoneNumber: String, address: String)
-  extends User(login.username, displayName, email, gender, phoneNumber, address)
+class Customer(username: String, displayName: String, email: String, gender: String, phoneNumber: String, address: String, val login: Login)
+  extends User(username, displayName, email, gender, phoneNumber, address)
 
-class Admin(login: Login, displayName: String, email: String, gender: String, phoneNumber: String, address: String)
-  extends User(login.username, displayName, email, gender, phoneNumber, address)
+class Admin(username: String, displayName: String, email: String, gender: String, phoneNumber: String, address: String, val login: Login)
+  extends User(username, displayName, email, gender, phoneNumber, address)
 
 case class Category(category: String)
 
@@ -37,14 +41,50 @@ class Food(val category: Category, val name: String, val price: Double, val comp
   }
 
   def incrementOrdersReceived(): Unit = {
+    //display the number of times customer ordered this food
     ordersReceived += 1
   }
 }
 
-case class Order(id: Int, customer: Customer, company: String, items: List[(Food, Int)]) {
+case class Order(id: Int, customer: Customer, restaurant: Restaurant, items: List[(Food, Int)]) {
   def totalPrice: Double = {
     items.foldLeft(0.0) { case (acc, (food, quantity)) =>
       acc + food.price * quantity
     }
+  }
+}
+
+class Restaurant(val name: String, val address: String, val menu: List[Food]) {
+  var orders: List[Order] = Nil
+
+  def addOrder(order: Order): Unit = {
+    orders = order :: orders
+  }
+}
+
+class DeliveryPerson(val name: String, var phoneNumber: String, var isAvailable: Boolean = true) {
+  var currentOrder: Order = _
+
+  def assignOrder(order: Order): Boolean = {
+    if (isAvailable) {
+      currentOrder = order
+      isAvailable = false
+      true
+    } else {
+      false
+    }
+  }
+
+  def completeOrder(): Unit = {
+    currentOrder = null
+    isAvailable = true
+  }
+
+
+
+}
+case class Payment(order: Order, amount: Double, paymentMethod: String, var isPaid: Boolean = false) {
+  def makePayment(): Unit = {
+    isPaid = true
   }
 }
