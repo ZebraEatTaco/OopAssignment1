@@ -1,4 +1,4 @@
-abstract class User(val username: String, val displayName: String, var email: String, val gender: String, var phoneNumber: String, var address: String)
+abstract class User(val username: String, var displayName: String, var email: String, val gender: String, var phoneNumber: String, var address: String)
 
 case class Login(username: String, password: String) {
   def login():Boolean={
