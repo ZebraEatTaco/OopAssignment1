@@ -50,15 +50,11 @@ class Food(val category: Category, val name: String, val price: Double, val comp
   }
 }
 
-case class Order(id: Int, customer: Customer, restaurant: Restaurant, items: List[(Food, Int)]) extends Discount {
-  val percentage: Double = 10.0  // Example discount percentage
-
+case class Order(id: Int, customer: Customer, restaurant: Restaurant, items: List[(Food, Int)], percentage: Double) extends Discount {
+  // Calculate total price by summing up item prices and applying discount
   def totalPrice: Double = {
-    var total = 0.0
-    for ((food, quantity) <- items) {
-      total += food.price * quantity
-    }
-    applyDiscount(total)
+    // Calculate subtotal by summing item prices
+    // Apply discount to subtotal
   }
 }
 
