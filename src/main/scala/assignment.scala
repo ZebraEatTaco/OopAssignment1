@@ -7,7 +7,6 @@ object User {
     userType.toLowerCase match {
       case "customer" => new Customer(username, displayName, email, gender, phoneNumber, address, Login(username, password))
       case "admin" => new Admin(username, displayName, email, gender, phoneNumber, address, Login(username, password))
-      case _ => throw new IllegalArgumentException(s"Unknown user type: $userType")
     }
   }
 }
@@ -41,16 +40,20 @@ class Food(val category: Category, val name: String, val price: Double, val comp
   }
 
   def incrementOrdersReceived(): Unit = {
-    //display the number of times customer ordered this food
+    // display the number of times customer ordered this food
     ordersReceived += 1
   }
 }
 
-case class Order(id: Int, customer: Customer, restaurant: Restaurant, items: List[(Food, Int)]) {
+case class Order(id: Int, customer: Customer, restaurant: Restaurant, items: List[(Food, Int)]) extends Discount {
+  val percentage: Double = 10.0  // Example discount percentage
+
   def totalPrice: Double = {
-    items.foldLeft(0.0) { case (acc, (food, quantity)) =>
-      acc + food.price * quantity
+    var total = 0.0
+    for ((food, quantity) <- items) {
+      total += food.price * quantity
     }
+    applyDiscount(total)
   }
 }
 
@@ -79,10 +82,8 @@ class DeliveryPerson(val name: String, var phoneNumber: String, var isAvailable:
     currentOrder = null
     isAvailable = true
   }
-
-
-
 }
+
 case class Payment(order: Order, amount: Double, paymentMethod: String, var isPaid: Boolean = false) {
   def makePayment(): Unit = {
     isPaid = true
