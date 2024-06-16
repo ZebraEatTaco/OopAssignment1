@@ -1,23 +1,5 @@
 abstract class User(val username: String, var displayName: String, var email: String, val gender: String, var phoneNumber: String, var address: String)
 
-case class Login(username: String, password: String) {
-  def login():Boolean={
-    //return login status
-    false
-  }
-}
-
-object User {
-  def register(userType: String, username: String, password: String, displayName: String, email: String, gender: String, phoneNumber: String, address: String): User = {
-    userType.toLowerCase match {
-      case "customer" => new Customer(username, displayName, email, gender, phoneNumber, address, Login(username, password))
-      case "admin" => new Admin(username, displayName, email, gender, phoneNumber, address, Login(username, password))
-      case "deliveryperson" => new DeliveryPerson(username, displayName, email, gender, phoneNumber, address, Login(username, password))
-      case "restaurant" => new Restaurant(username, displayName, email, gender, phoneNumber, address, Nil, Login(username, password))
-    }
-  }
-}
-
 class Customer(username: String, displayName: String, email: String, gender: String, phoneNumber: String, address: String, val login: Login)
   extends User(username, displayName, email, gender, phoneNumber, address)
 
@@ -45,51 +27,69 @@ class DeliveryPerson(username: String, displayName: String, email: String, gende
   }
 }
 
-  class Restaurant(username: String, displayName: String, email: String, gender: String, phoneNumber: String, address: String, var menu: List[Food], val login: Login)
-    extends User(username, displayName, email, gender, phoneNumber, address) {
-    var orders: List[Order] = Nil
+class Restaurant(username: String, displayName: String, email: String, gender: String, phoneNumber: String, address: String, var menu: List[Food], val login: Login)
+  extends User(username, displayName, email, gender, phoneNumber, address) {
+  var orders: List[Order] = Nil
 
-    def addOrder(order: Order): Unit = {
-      orders = order :: orders
+  def addOrder(order: Order): Unit = {
+    orders = order :: orders
+  }
+}
+
+case class Login(username: String, password: String) {
+  def login():Boolean={
+    //return login status
+    false
+  }
+}
+
+object User {
+  def register(userType: String, username: String, password: String, displayName: String, email: String, gender: String, phoneNumber: String, address: String): User = {
+    userType.toLowerCase match {
+      case "customer" => new Customer(username, displayName, email, gender, phoneNumber, address, Login(username, password))
+      case "admin" => new Admin(username, displayName, email, gender, phoneNumber, address, Login(username, password))
+      case "deliveryperson" => new DeliveryPerson(username, displayName, email, gender, phoneNumber, address, Login(username, password))
+      case "restaurant" => new Restaurant(username, displayName, email, gender, phoneNumber, address, Nil, Login(username, password))
     }
   }
+}
 
-  trait Discount {
-    val percentage: Double
+case class Category(category: String, description:String)
 
-    def calculateDiscount(price: Double): Double = {
-      price * percentage / 100
-    }
+class Food(var category: Category, var name: String, var price: Double, val restaurant: Restaurant) {
+  var reviews: List[(Int, String)] = Nil
+  var ordersReceived: Int = 0
 
-    def applyDiscount(price: Double): Double = {
-      price - calculateDiscount(price)
-    }
+  def addReview(rating: Int, comment: String): Unit = {
+    reviews = (rating, comment) :: reviews
   }
 
-  class Food(var category: Category, var name: String, var price: Double, val restaurant: Restaurant) {
-    var reviews: List[(Int, String)] = Nil
-    var ordersReceived: Int = 0
+  def incrementOrdersReceived(): Unit = {
+    // display the number of times customer ordered this food
+    ordersReceived += 1
+  }
+}
 
-    def addReview(rating: Int, comment: String): Unit = {
-      reviews = (rating, comment) :: reviews
-    }
+trait Discount {
+  val percentage: Double
 
-    def incrementOrdersReceived(): Unit = {
-      // display the number of times customer ordered this food
-      ordersReceived += 1
-    }
+  def calculateDiscount(price: Double): Double = {
+    price * percentage / 100
   }
 
-  case class Category(category: String, description:String)
-
-  case class Order(id: Int, customer: Customer, restaurant: Restaurant, items: List[(Food, Int)], percentage: Double) extends Discount {
-    // Calculate total price by summing up item prices and applying discount
-    def totalPrice: Double = {
-      // Calculate subtotal by summing item prices
-      // Apply discount to subtotal
-      0.00
-    }
+  def applyDiscount(price: Double): Double = {
+    price - calculateDiscount(price)
   }
+}
+
+case class Order(id: Int, customer: Customer, restaurant: Restaurant, items: List[(Food, Int)], percentage: Double) extends Discount {
+  // Calculate total price by summing up item prices and applying discount
+  def totalPrice: Double = {
+    // Calculate subtotal by summing item prices
+    // Apply discount to subtotal
+    0.00
+  }
+}
 
 case class Payment(order: Order, amount: Double, paymentMethod: String, var isPaid: Boolean = false) {
   def makePayment(): Unit = {
