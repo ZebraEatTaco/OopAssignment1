@@ -27,6 +27,30 @@ class Customer(username: String, displayName: String, email: String, gender: Str
 class Admin(username: String, displayName: String, email: String, gender: String, phoneNumber: String, address: String, val login: Login)
   extends User(username, displayName, email, gender, phoneNumber, address)
 
+class DeliveryPerson(username: String, displayName: String, email: String, gender: String, phoneNumber: String, address: String, val login: Login)
+  extends User(username, displayName, email, gender, phoneNumber, address) {
+  var isAvailable: Boolean = true
+  var currentOrder: Option[Order] = None
+
+  def assignOrder(order: Order): Boolean = {
+    if (isAvailable) {
+      currentOrder = order
+      isAvailable = false
+      true
+    } else {
+      false
+    }
+  }
+
+class Restaurant(username: String, displayName: String, email: String, gender: String, phoneNumber: String, address: String, var menu: List[Food], val login: Login)
+  extends User(username, displayName, email, gender, phoneNumber, address) {
+  var orders: List[Order] = Nil
+
+  def addOrder(order: Order): Unit = {
+    orders = order :: orders
+  }
+}
+
 case class Category(category: String)
 
 trait Discount {
@@ -63,28 +87,7 @@ case class Order(id: Int, customer: Customer, restaurant: Restaurant, items: Lis
   }
 }
 
-class Restaurant(username: String, displayName: String, email: String, gender: String, phoneNumber: String, address: String, var menu: List[Food], val login: Login)
-  extends User(username, displayName, email, gender, phoneNumber, address) {
-  var orders: List[Order] = Nil
 
-  def addOrder(order: Order): Unit = {
-    orders = order :: orders
-  }
-}
-class DeliveryPerson(username: String, displayName: String, email: String, gender: String, phoneNumber: String, address: String, val login: Login)
-  extends User(username, displayName, email, gender, phoneNumber, address) {
-  var isAvailable: Boolean = true
-  var currentOrder: Option[Order] = None
-
-  def assignOrder(order: Order): Boolean = {
-    if (isAvailable) {
-      currentOrder = order
-      isAvailable = false
-      true
-    } else {
-      false
-    }
-  }
 
   def completeOrder(): Unit = {
     currentOrder = null
