@@ -17,9 +17,6 @@ object User {
     }
   }
 }
-    }
-  }
-}
 
 class Customer(username: String, displayName: String, email: String, gender: String, phoneNumber: String, address: String, val login: Login)
   extends User(username, displayName, email, gender, phoneNumber, address)
@@ -42,50 +39,51 @@ class DeliveryPerson(username: String, displayName: String, email: String, gende
     }
   }
 
-class Restaurant(username: String, displayName: String, email: String, gender: String, phoneNumber: String, address: String, var menu: List[Food], val login: Login)
-  extends User(username, displayName, email, gender, phoneNumber, address) {
-  var orders: List[Order] = Nil
+  class Restaurant(username: String, displayName: String, email: String, gender: String, phoneNumber: String, address: String, var menu: List[Food], val login: Login)
+    extends User(username, displayName, email, gender, phoneNumber, address) {
+    var orders: List[Order] = Nil
 
-  def addOrder(order: Order): Unit = {
-    orders = order :: orders
-  }
-}
-
-case class Category(category: String)
-
-trait Discount {
-  val percentage: Double
-
-  def calculateDiscount(price: Double): Double = {
-    price * percentage / 100
+    def addOrder(order: Order): Unit = {
+      orders = order :: orders
+    }
   }
 
-  def applyDiscount(price: Double): Double = {
-    price - calculateDiscount(price)
-  }
-}
+  case class Category(category: String)
 
-class Food(var category: Category, var name: String, var price: Double, val restaurant: Restuarant) {
-  var reviews: List[(Int, String)] = Nil
-  var ordersReceived: Int = 0
+  trait Discount {
+    val percentage: Double
 
-  def addReview(rating: Int, comment: String): Unit = {
-    reviews = (rating, comment) :: reviews
+    def calculateDiscount(price: Double): Double = {
+      price * percentage / 100
+    }
+
+    def applyDiscount(price: Double): Double = {
+      price - calculateDiscount(price)
+    }
   }
 
-  def incrementOrdersReceived(): Unit = {
-    // display the number of times customer ordered this food
-    ordersReceived += 1
-  }
-}
+  class Food(var category: Category, var name: String, var price: Double, val restaurant: Restaurant) {
+    var reviews: List[(Int, String)] = Nil
+    var ordersReceived: Int = 0
 
-case class Order(id: Int, customer: Customer, restaurant: Restaurant, items: List[(Food, Int)], percentage: Double) extends Discount {
-  // Calculate total price by summing up item prices and applying discount
-  def totalPrice: Double = {
-    // Calculate subtotal by summing item prices
-    // Apply discount to subtotal
+    def addReview(rating: Int, comment: String): Unit = {
+      reviews = (rating, comment) :: reviews
+    }
+
+    def incrementOrdersReceived(): Unit = {
+      // display the number of times customer ordered this food
+      ordersReceived += 1
+    }
   }
-}
+
+  case class Order(id: Int, customer: Customer, restaurant: Restaurant, items: List[(Food, Int)], percentage: Double) extends Discount {
+    // Calculate total price by summing up item prices and applying discount
+    def totalPrice: Double = {
+      // Calculate subtotal by summing item prices
+      // Apply discount to subtotal
+      0.00
+    }
+  }
 
 
 
