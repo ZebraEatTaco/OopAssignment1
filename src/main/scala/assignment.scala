@@ -96,8 +96,6 @@ object User {
   }
 }
 
-case class Category(category: String, description:String)
-
 class Food(var category: Category, var name: String, var price: Double, val restaurant: Restaurant) {
   var reviews: List[(Customer, Int, String)] = Nil
   var ordersReceived: Int = 0
@@ -112,6 +110,17 @@ class Food(var category: Category, var name: String, var price: Double, val rest
   }
 }
 
+case class Category(category: String, description:String)
+
+case class Order(id: Int, customer: Customer, restaurant: Restaurant, items: List[(Food, Int)], percentage: Double) extends Discount {
+  // Calculate total price by summing up item prices and applying discount
+  def totalPrice: Double = {
+    // Calculate subtotal by summing item prices
+    // Apply discount to subtotal
+    0.00
+  }
+}
+
 trait Discount {
   var percentage: Double
 
@@ -121,15 +130,6 @@ trait Discount {
 
   def applyDiscount(price: Double): Double = {
     price - calculateDiscount(price)
-  }
-}
-
-case class Order(id: Int, customer: Customer, restaurant: Restaurant, items: List[(Food, Int)], percentage: Double) extends Discount {
-  // Calculate total price by summing up item prices and applying discount
-  def totalPrice: Double = {
-    // Calculate subtotal by summing item prices
-    // Apply discount to subtotal
-    0.00
   }
 }
 
