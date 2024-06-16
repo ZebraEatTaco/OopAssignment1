@@ -103,7 +103,7 @@ class Food(var category: Category, var name: String, var price: Double, val rest
   var ordersReceived: Int = 0
 
   def addReview(customer:Customer, rating: Int, comment: String): Unit = {
-    reviews = (customer, rating, comment) :: reviews
+    reviews = (customer.displayName, rating, comment) :: reviews
   }
 
   def incrementOrdersReceived(): Unit = {
