@@ -12,6 +12,11 @@ object User {
     userType.toLowerCase match {
       case "customer" => new Customer(username, displayName, email, gender, phoneNumber, address, Login(username, password))
       case "admin" => new Admin(username, displayName, email, gender, phoneNumber, address, Login(username, password))
+      case "deliveryperson" => new DeliveryPerson(username, displayName, email, gender, phoneNumber, address, Login(username, password))
+      case "restaurant" => new Restaurant(username, displayName, email, gender, phoneNumber, address, Nil, Login(username, password))
+    }
+  }
+}
     }
   }
 }
@@ -36,7 +41,7 @@ trait Discount {
   }
 }
 
-class Food(val category: Category, val name: String, val price: Double, val company: String) {
+class Food(var category: Category, var name: String, var price: Double, val restaurant: Restuarant) {
   var reviews: List[(Int, String)] = Nil
   var ordersReceived: Int = 0
 
@@ -58,16 +63,18 @@ case class Order(id: Int, customer: Customer, restaurant: Restaurant, items: Lis
   }
 }
 
-class Restaurant(var name: String, var address: String, var menu: List[Food]) {
+class Restaurant(username: String, displayName: String, email: String, gender: String, phoneNumber: String, address: String, var menu: List[Food], val login: Login)
+  extends User(username, displayName, email, gender, phoneNumber, address) {
   var orders: List[Order] = Nil
 
   def addOrder(order: Order): Unit = {
     orders = order :: orders
   }
 }
-
-class DeliveryPerson(val name: String, var phoneNumber: String, var isAvailable: Boolean = true) {
-  var currentOrder: Order = _
+class DeliveryPerson(username: String, displayName: String, email: String, gender: String, phoneNumber: String, address: String, val login: Login)
+  extends User(username, displayName, email, gender, phoneNumber, address) {
+  var isAvailable: Boolean = true
+  var currentOrder: Option[Order] = None
 
   def assignOrder(order: Order): Boolean = {
     if (isAvailable) {
@@ -85,7 +92,7 @@ class DeliveryPerson(val name: String, var phoneNumber: String, var isAvailable:
   }
 }
 
-case class Payment(paymentID: String, order: Order, amount: Double, paymentMethod: String, var isPaid: Boolean = false) {
+case class Payment(order: Order, amount: Double, paymentMethod: String, var isPaid: Boolean = false) {
   def makePayment(): Unit = {
     isPaid = true
   }
