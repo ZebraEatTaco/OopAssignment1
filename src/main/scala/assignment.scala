@@ -1,4 +1,4 @@
-abstract class User(val username: String, val displayName: String, var email: String, val gender: String, var phoneNumber: String, var address: String)
+abstract class User(val username: String, var displayName: String, var email: String, val gender: String, var phoneNumber: String, var address: String)
 
 case class Login(username: String, password: String) {
   def login():Boolean={
@@ -12,6 +12,11 @@ object User {
     userType.toLowerCase match {
       case "customer" => new Customer(username, displayName, email, gender, phoneNumber, address, Login(username, password))
       case "admin" => new Admin(username, displayName, email, gender, phoneNumber, address, Login(username, password))
+      case "deliveryperson" => new DeliveryPerson(username, displayName, email, gender, phoneNumber, address, Login(username, password))
+      case "restaurant" => new Restaurant(username, displayName, email, gender, phoneNumber, address, Nil, Login(username, password))
+    }
+  }
+}
     }
   }
 }
@@ -21,6 +26,30 @@ class Customer(username: String, displayName: String, email: String, gender: Str
 
 class Admin(username: String, displayName: String, email: String, gender: String, phoneNumber: String, address: String, val login: Login)
   extends User(username, displayName, email, gender, phoneNumber, address)
+
+class DeliveryPerson(username: String, displayName: String, email: String, gender: String, phoneNumber: String, address: String, val login: Login)
+  extends User(username, displayName, email, gender, phoneNumber, address) {
+  var isAvailable: Boolean = true
+  var currentOrder: Option[Order] = None
+
+  def assignOrder(order: Order): Boolean = {
+    if (isAvailable) {
+      currentOrder = order
+      isAvailable = false
+      true
+    } else {
+      false
+    }
+  }
+
+class Restaurant(username: String, displayName: String, email: String, gender: String, phoneNumber: String, address: String, var menu: List[Food], val login: Login)
+  extends User(username, displayName, email, gender, phoneNumber, address) {
+  var orders: List[Order] = Nil
+
+  def addOrder(order: Order): Unit = {
+    orders = order :: orders
+  }
+}
 
 case class Category(category: String)
 
@@ -36,7 +65,7 @@ trait Discount {
   }
 }
 
-class Food(val category: Category, val name: String, val price: Double, val company: String) {
+class Food(var category: Category, var name: String, var price: Double, val restaurant: Restuarant) {
   var reviews: List[(Int, String)] = Nil
   var ordersReceived: Int = 0
 
@@ -50,38 +79,15 @@ class Food(val category: Category, val name: String, val price: Double, val comp
   }
 }
 
-case class Order(id: Int, customer: Customer, restaurant: Restaurant, items: List[(Food, Int)]) extends Discount {
-  val percentage: Double = 10.0  // Example discount percentage
-
+case class Order(id: Int, customer: Customer, restaurant: Restaurant, items: List[(Food, Int)], percentage: Double) extends Discount {
+  // Calculate total price by summing up item prices and applying discount
   def totalPrice: Double = {
-    var total = 0.0
-    for ((food, quantity) <- items) {
-      total += food.price * quantity
-    }
-    applyDiscount(total)
+    // Calculate subtotal by summing item prices
+    // Apply discount to subtotal
   }
 }
 
-class Restaurant(var name: String, var address: String, var menu: List[Food]) {
-  var orders: List[Order] = Nil
 
-  def addOrder(order: Order): Unit = {
-    orders = order :: orders
-  }
-}
-
-class DeliveryPerson(val name: String, var phoneNumber: String, var isAvailable: Boolean = true) {
-  var currentOrder: Order = _
-
-  def assignOrder(order: Order): Boolean = {
-    if (isAvailable) {
-      currentOrder = order
-      isAvailable = false
-      true
-    } else {
-      false
-    }
-  }
 
   def completeOrder(): Unit = {
     currentOrder = null
