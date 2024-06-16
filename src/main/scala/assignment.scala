@@ -62,7 +62,7 @@ case class Order(id: Int, customer: Customer, restaurant: Restaurant, items: Lis
   }
 }
 
-class Restaurant(val name: String, val address: String, val menu: List[Food]) {
+class Restaurant(var name: String, var address: String, var menu: List[Food]) {
   var orders: List[Order] = Nil
 
   def addOrder(order: Order): Unit = {
