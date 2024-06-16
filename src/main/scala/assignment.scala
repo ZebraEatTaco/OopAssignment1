@@ -31,13 +31,19 @@ class DeliveryPerson(username: String, displayName: String, email: String, gende
 
   def assignOrder(order: Order): Boolean = {
     if (isAvailable) {
-      currentOrder = order
+      currentOrder = _
       isAvailable = false
       true
     } else {
       false
     }
   }
+
+  def completeOrder(): Unit = {
+    currentOrder = null
+    isAvailable = true
+  }
+}
 
   class Restaurant(username: String, displayName: String, email: String, gender: String, phoneNumber: String, address: String, var menu: List[Food], val login: Login)
     extends User(username, displayName, email, gender, phoneNumber, address) {
@@ -84,14 +90,6 @@ class DeliveryPerson(username: String, displayName: String, email: String, gende
       0.00
     }
   }
-
-
-
-  def completeOrder(): Unit = {
-    currentOrder = null
-    isAvailable = true
-  }
-}
 
 case class Payment(order: Order, amount: Double, paymentMethod: String, var isPaid: Boolean = false) {
   def makePayment(): Unit = {
