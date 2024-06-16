@@ -54,8 +54,6 @@ class DeliveryPerson(username: String, displayName: String, email: String, gende
     }
   }
 
-  case class Category(category: String)
-
   trait Discount {
     val percentage: Double
 
@@ -81,6 +79,8 @@ class DeliveryPerson(username: String, displayName: String, email: String, gende
       ordersReceived += 1
     }
   }
+
+  case class Category(category: String, description:String)
 
   case class Order(id: Int, customer: Customer, restaurant: Restaurant, items: List[(Food, Int)], percentage: Double) extends Discount {
     // Calculate total price by summing up item prices and applying discount
